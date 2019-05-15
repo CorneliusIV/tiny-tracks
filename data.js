@@ -27,7 +27,7 @@ function getTitle(item) {
   // Sorry NPR but this if you are included in the Title split there as well
   const artist = artistString.split('NPR')[0]
   // Strip white space and set to lower
-  const artistName = artist.replace(/^\s+|\s+$/g, '').toLowerCase()
+  const artistName = artist.trim().toLowerCase()
   // TODO: This still still kind of hacky and doesn't cover all cases
   // Ex: Solve for ampersands and 'and'
   return artistName
@@ -36,16 +36,16 @@ function getTitle(item) {
 // The main function to make calls to Youtube and Spotify
 async function getTinyArtistTracks() {
   // the first query will return data with an etag
-  const res = await getPlaylistData(null)
-  const results = res.data.items.map(getTitle)
-  // Create a set to make sure everything is unique and back to an array because we need iterable
+  const response = await getPlaylistData()
+  const results = response.data.items.map(getTitle)
+  // Create a set to make sure everything is unique and back to an array because we need it iterable
   const artists = Array.from(new Set(results))
   const artistData = await getArtistID(artists)
   return artistData
 }
 
 // Get Youtube playlist data
-async function getPlaylistData(etag) {
+async function getPlaylistData() {
   const res = await youtube.playlistItems.list({
     part: 'id,snippet',
     maxResults: 25,
